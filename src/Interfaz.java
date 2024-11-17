@@ -1,12 +1,12 @@
 import javax.swing.*;
 import com.fazecast.jSerialComm.SerialPort;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import org.jfree.chart.ChartFactory;   // Para crear gráficos
-import org.jfree.chart.ChartPanel;    // Para mostrar gráficos en un panel
-import org.jfree.chart.JFreeChart;    // Clase principal de gráficos
-import org.jfree.data.category.DefaultCategoryDataset; // Para datos categóricos
+import org.knowm.xchart.*;
+import org.knowm.xchart.style.Styler;
 
 
 public class Interfaz extends JFrame {
@@ -18,17 +18,27 @@ public class Interfaz extends JFrame {
     private JComboBox comboBox1;
     private JButton conectarButton;
     private JLabel titulo;
+    private JPanel panelGrafica;
     private SerialPort sp;
-    private JFreeChart grafico;
+    private XYChart chart;
 
     public Interfaz(){
         setContentPane(MainInterfaz);
         setTitle("Control de posición");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(500, 300);
+        setSize(600, 350);
         setLocationRelativeTo(null);
         setVisible(true);
-        MainInterfaz.setLayout(null);
+
+        panelGrafica.setLayout(new BorderLayout());
+        double[] x = {1, 2, 3, 4, 5};
+        double[] y = {1, 2, 3, 4, 5};
+        chart = QuickChart.getChart("Gráfico de ejemplo", "X", "Y", null, x, y);
+        XChartPanel<XYChart> chartPanel = new XChartPanel<>(chart);
+        panelGrafica.add(chartPanel, BorderLayout.CENTER);
+        panelGrafica.revalidate();
+        panelGrafica.repaint();
+
         validadorAngulo.setVisible(false);
         conectarButton.setEnabled(false);
         enviarButton.setEnabled(false);
