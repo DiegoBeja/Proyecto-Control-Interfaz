@@ -28,6 +28,7 @@ public class Interfaz extends JFrame {
     private JLabel kp;
     private JLabel ki;
     private JLabel kd;
+    private JButton resetPID;
     private SerialPort sp;
     private XYChart chart;
     private List<Double> tiempos;
@@ -49,6 +50,9 @@ public class Interfaz extends JFrame {
         kpInput.setBorder(null);
         kiInput.setBorder(null);
         kdInput.setBorder(null);
+        kpInput.setText("0.6");
+        kiInput.setText("0.003");
+        kdInput.setText("0.8");
         panelPID.setBackground(new Color(45,42,46));
         kp.setForeground(new Color(168,167,167));
         ki.setForeground(new Color(168,167,167));
@@ -112,7 +116,6 @@ public class Interfaz extends JFrame {
         panelGrafica.setLayout(new BorderLayout());
         chart = new XYChartBuilder()
                 .width(600).height(300)
-                .title("Datos del Arduino")
                 .xAxisTitle("Tiempo (s)")
                 .yAxisTitle("Grados")
                 .build();
@@ -124,6 +127,15 @@ public class Interfaz extends JFrame {
         panelGrafica.add(chartPanel, BorderLayout.CENTER);
         panelGrafica.revalidate();
         panelGrafica.repaint();
+
+        resetPID.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                kpInput.setText("0.6");
+                kiInput.setText("0.003");
+                kdInput.setText("0.8");
+            }
+        });
     }
 
     private void leerDatosSerial() {
