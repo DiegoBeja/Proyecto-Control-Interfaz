@@ -136,42 +136,54 @@ public class Interfaz extends JFrame {
                         int bytesLeidos = sp.getInputStream().read(buffer);
                         if (bytesLeidos > 0) {
                             String mensaje = new String(buffer, 0, bytesLeidos).trim();
-                            try {
-                                // Dividir el mensaje en base a la coma
-                                String[] partes = mensaje.split(" ");
-                                if (partes.length == 1) {
-                                    // Intentar convertir ambas partes a double
-                                    double tiempo = (System.currentTimeMillis() - startTime) / 1000.0; // Tiempo en segundos
-                                    double valorY = Double.parseDouble(partes[0].trim()); // Parte después de la coma
+                            System.out.println("Mensaje recibido: " + mensaje);  // Depuración adicional
 
-                                    // Agregar los valores al eje X y Y
-                                    synchronized (this) {
-                                        tiempos.add(tiempo); // Tiempo en el eje X
-                                        valores.add(valorY); // Valor del sensor en el eje Y
+                            // Verificar que el mensaje contenga una coma
+                            if (mensaje.contains(",")) {
+                                try {
+                                    // Dividir el mensaje por coma (ajustado para tu formato)
+                                    String[] partes = mensaje.split(",");
+                                    if (partes.length == 1) {
+                                        // Obtener el valor de anguloActual (primer valor)
+                                        double anguloActual = Double.parseDouble(partes[0].trim()); // Asegurarse que sea decimal
 
-                                        // Mantener un máximo de 100 puntos en el gráfico
-                                        if (tiempos.size() > 100) {
-                                            tiempos.remove(0);
-                                            valores.remove(0);
+                                        double tiempo = (System.currentTimeMillis() - startTime) / 1000.0; // Tiempo en segundos
+                                        System.out.println("Tiempo: " + tiempo + ", AnguloActual: " + anguloActual);  // Depuración adicional
+
+                                        // Agregar el valor de anguloActual al eje Y
+                                        synchronized (this) {
+                                            tiempos.add(tiempo);  // Tiempo en el eje X
+                                            valores.add(anguloActual);  // AnguloActual en el eje Y
+
+                                            // Mantener un máximo de 100 puntos en el gráfico
+                                            if (tiempos.size() > 100) {
+                                                tiempos.remove(0);
+                                                valores.remove(0);
+                                            }
                                         }
-                                    }
 
-                                    // Crear la serie solo si no se ha creado previamente
-                                    if (!serieCreada) {
-                                        // Crear la serie "Datos" con los primeros valores
-                                        chart.addSeries("Datos", tiempos, valores);
-                                        serieCreada = true;
-                                    }
+                                        // Crear la serie solo si no se ha creado previamente
+                                        if (!serieCreada) {
+                                            // Crear la serie "Datos" con los primeros valores
+                                            chart.addSeries("Angulo Actual", tiempos, valores);
+                                            serieCreada = true;
+                                            System.out.println("Serie creada.");
+                                        }
 
-                                    // Actualizar el gráfico con los nuevos datos
-                                    SwingUtilities.invokeLater(() -> {
-                                        chart.updateXYSeries("Datos", tiempos, valores, null);
-                                        panelGrafica.revalidate();
-                                        panelGrafica.repaint();
-                                    });
+                                        // Actualizar el gráfico con los nuevos datos
+                                        SwingUtilities.invokeLater(() -> {
+                                            System.out.println("Actualizando gráfico...");
+                                            chart.updateXYSeries("Angulo Actual", tiempos, valores, null);
+                                            panelGrafica.revalidate();
+                                            panelGrafica.repaint();
+                                            System.out.println("Gráfico actualizado.");
+                                        });
+                                    }
+                                } catch (NumberFormatException e) {
+                                    System.out.println("Error de formato en los datos: " + mensaje);
                                 }
-                            } catch (NumberFormatException e) {
-                                System.out.println("Dato no válido recibido: " + mensaje);
+                            } else {
+                                System.out.println("Formato de mensaje incorrecto (sin coma): " + mensaje);
                             }
                         }
                     }
@@ -182,6 +194,5 @@ public class Interfaz extends JFrame {
             }
         }).start();
     }
-
 
 }
